@@ -1,0 +1,1343 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Salford Bins — Prototype</title>
+
+  <style>
+    :root{
+      /* Base */
+      --bg: #070b16;
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.085);
+      --border: rgba(255,255,255,0.14);
+      --text: #F3F6FF;
+      --muted: rgba(243,246,255,0.75);
+      --focus: #60a5fa;
+
+      /* Accents */
+      --pink: #ff4aa2;
+      --blue: #2aa8ff;
+      --brown:#a16207;
+      --black:#111827;
+      --green:#22c55e;
+      --yellow:#fbbf24;
+      --red:#ef4444;
+
+      /* Layout */
+      --radius: 18px;
+      --radius2: 14px;
+      --shadow: 0 20px 40px rgba(0,0,0,0.35);
+      --shadow2: 0 12px 26px rgba(0,0,0,0.25);
+    }
+
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 15% 10%, rgba(42,168,255,0.22), transparent 55%),
+        radial-gradient(1000px 600px at 80% 10%, rgba(255,74,162,0.18), transparent 55%),
+        radial-gradient(900px 700px at 50% 90%, rgba(34,197,94,0.14), transparent 60%),
+        linear-gradient(180deg, #060913 0%, #070b16 100%);
+      min-height:100vh;
+    }
+
+    /* Container */
+    .container{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 16px 30px;
+    }
+
+    /* Top Nav */
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      background: rgba(7,11,22,0.62);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    .topbarInner{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 10px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+    .brandBadge{
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(42,168,255,0.9), rgba(255,74,162,0.85));
+      display:grid;
+      place-items:center;
+      box-shadow: var(--shadow2);
+      border: 1px solid rgba(255,255,255,0.22);
+    }
+    .brandBadge svg{ width: 22px; height: 22px; }
+
+    .nav{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+    .nav a{
+      text-decoration:none;
+      color: var(--text);
+      font-weight: 850;
+      font-size: 0.95rem;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.03);
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+    }
+    .nav a:hover{
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.20);
+      transform: translateY(-1px);
+    }
+    .nav a:focus-visible{
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Hero */
+    .hero{
+      margin-top: 18px;
+      border-radius: calc(var(--radius) + 6px);
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(900px 450px at 25% 10%, rgba(42,168,255,0.22), transparent 55%),
+        radial-gradient(900px 450px at 80% 20%, rgba(255,74,162,0.18), transparent 55%),
+        rgba(255,255,255,0.04);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: linear-gradient(120deg,
+        rgba(42,168,255,0.18),
+        rgba(255,74,162,0.12),
+        rgba(34,197,94,0.10));
+      filter: blur(22px);
+      opacity:0.35;
+      pointer-events:none;
+    }
+    .heroInner{
+      position: relative;
+      z-index: 1;
+      display:grid;
+      gap: 14px;
+    }
+    @media(min-width: 880px){
+      .heroInner{
+        grid-template-columns: 1.1fr 0.9fr;
+        align-items: center;
+      }
+    }
+    .heroTitle{
+      margin: 0;
+      font-size: 1.65rem;
+      line-height: 1.12;
+      letter-spacing: 0.2px;
+      font-weight: 950;
+    }
+    .heroSub{
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-weight: 650;
+    }
+    .heroPills{
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      font-weight: 850;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+    }
+    .dot{ width:12px; height:12px; border-radius: 999px; border:1px solid rgba(255,255,255,0.22); }
+    .dotPink{ background: var(--pink); }
+    .dotBlue{ background: var(--blue); }
+    .dotBrown{ background: var(--brown); }
+    .dotBlack{ background: #0f172a; }
+    .dotGreen{ background: var(--green); }
+
+    .heroActions{
+      display:grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    @media(min-width: 520px){
+      .heroActions{ grid-template-columns: 1fr 1fr; }
+    }
+    .btn{
+      width:100%;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-weight: 950;
+      cursor:pointer;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+      display:inline-flex;
+      justify-content:center;
+      align-items:center;
+      gap: 10px;
+    }
+    .btn:hover{
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.22);
+      transform: translateY(-1px);
+    }
+    .btn:active{ transform: translateY(0); }
+    .btn:focus-visible{ outline:3px solid var(--focus); outline-offset:2px; }
+    .btnPrimary{
+      background: linear-gradient(135deg, rgba(42,168,255,0.30), rgba(255,74,162,0.20));
+    }
+    .btnDanger{
+      background: rgba(239,68,68,0.14);
+      border-color: rgba(239,68,68,0.30);
+    }
+
+    /* Sections */
+    .section{
+      margin-top: 16px;
+    }
+    .sectionHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 10px;
+      padding: 0 4px;
+    }
+    .sectionHeader h2{
+      margin:0;
+      font-size: 1.15rem;
+      font-weight: 950;
+      letter-spacing: 0.2px;
+    }
+    .sectionHeader p{
+      margin:0;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    /* Cards Grid */
+    .grid{
+      display:grid;
+      gap: 12px;
+    }
+    @media(min-width: 900px){
+      .grid{
+        grid-template-columns: 1.12fr 0.88fr;
+        align-items: start;
+      }
+    }
+
+    .card{
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.14);
+      background: var(--card);
+      box-shadow: var(--shadow2);
+      padding: 14px;
+      overflow:hidden;
+      position: relative;
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset: -1px;
+      background: linear-gradient(120deg, rgba(42,168,255,0.10), rgba(255,74,162,0.07), rgba(34,197,94,0.08));
+      opacity: 0.5;
+      pointer-events:none;
+    }
+    .card > *{ position: relative; z-index: 1; }
+
+    .miniGrid{
+      display:grid;
+      gap: 12px;
+    }
+    @media(min-width: 700px){
+      .miniGrid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Dashboard boxes */
+    .dashTop{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content:space-between;
+    }
+    .kv{
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      border-radius: var(--radius2);
+      min-width: 240px;
+      flex: 1;
+    }
+    .kvTitle{
+      margin:0;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+    .kvValue{
+      margin:0;
+      font-weight: 950;
+      font-size: 1.15rem;
+      line-height:1.25;
+    }
+
+    .reminder{
+      padding: 12px;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: linear-gradient(135deg, rgba(251,191,36,0.10), rgba(255,255,255,0.03));
+      font-weight: 900;
+      display:flex;
+      gap: 10px;
+      align-items: flex-start;
+      flex: 1;
+      min-width: 240px;
+    }
+    .reminder strong{ color: #fff; }
+    .reminderIcon{
+      width: 34px; height: 34px; border-radius: 12px;
+      display:grid; place-items:center;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      flex: 0 0 auto;
+    }
+    .reminderIcon svg{ width: 18px; height: 18px; }
+
+    /* Form controls */
+    .controls{
+      margin-top: 12px;
+      display:grid;
+      gap: 10px;
+    }
+    @media(min-width: 650px){
+      .controls{ grid-template-columns: 1fr 1fr; }
+    }
+    label{
+      display:block;
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+    select, input, textarea{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-size: 1rem;
+      outline:none;
+    }
+    textarea{ min-height: 110px; resize: vertical; }
+    select:focus-visible, input:focus-visible, textarea:focus-visible{
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Next collection */
+    .nextBox{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+    .nextTitle{
+      margin:0;
+      font-weight: 950;
+      font-size: 1.05rem;
+    }
+    .nextMeta{
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      font-weight: 900;
+      font-size: 0.95rem;
+    }
+
+    /* Calendar */
+    .calHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 0 4px;
+    }
+    .calHeader h3{
+      margin:0;
+      font-size: 1.05rem;
+      font-weight: 950;
+    }
+    .calHeader p{
+      margin:0;
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 0.95rem;
+    }
+
+    .calendar{
+      margin-top: 10px;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+    }
+    @media(min-width: 650px){
+      .calendar{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+    }
+
+    .dateBtn{
+      width:100%;
+      text-align:left;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+      cursor:pointer;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+    }
+    .dateBtn:hover{
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.22);
+      transform: translateY(-1px);
+    }
+    .dateBtn:focus-visible{ outline:3px solid var(--focus); outline-offset: 2px; }
+
+    .dateTop{
+      display:flex;
+      justify-content:space-between;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .dateNum{
+      font-weight: 950;
+      font-size: 1.05rem;
+    }
+    .dateDay{
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+    .dateDots{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      margin-top: 8px;
+    }
+    .dotSmall{
+      width: 11px; height: 11px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.22);
+    }
+    .dateLine{
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-weight: 700;
+      line-height: 1.35;
+      font-size: 0.95rem;
+    }
+
+    /* Bin Guide */
+    .binGrid{
+      display:grid;
+      gap: 12px;
+    }
+    @media(min-width: 650px){
+      .binGrid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .binCard{
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.14);
+      background: var(--card2);
+      padding: 14px;
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      position: relative;
+    }
+    .binCard::before{
+      content:"";
+      position:absolute;
+      inset: -1px;
+      opacity: 0.25;
+      pointer-events:none;
+    }
+    .binCard > *{ position: relative; z-index: 1; }
+
+    .binHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .binTitle{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      font-weight: 950;
+      margin:0;
+      font-size: 1.05rem;
+      letter-spacing: 0.15px;
+    }
+    .freq{
+      font-weight: 950;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+    .binText{
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    ul{
+      margin: 10px 0 0 18px;
+      line-height: 1.45;
+      color: var(--text);
+    }
+    li{ margin: 7px 0; }
+    .note{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px dashed rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    /* Q&A */
+    .qaBox{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+    .qaTitle{
+      margin:0;
+      font-weight: 950;
+      font-size: 1.05rem;
+    }
+    .qaHint{
+      margin: 6px 0 10px;
+      color: var(--muted);
+      font-weight: 650;
+      line-height: 1.45;
+    }
+    .qaResult{
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.03);
+    }
+    .qaResult p{ margin:0; }
+    .qaResult .answer{
+      color: var(--muted);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    /* Footer */
+    footer{
+      margin-top: 14px;
+      padding: 12px 4px 6px;
+      color: rgba(243,246,255,0.72);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    /* Utility */
+    .srOnly{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip: rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- TOP NAV -->
+  <div class="topbar" role="navigation" aria-label="Main navigation">
+    <div class="topbarInner">
+      <div class="brand" aria-label="Prototype brand">
+        <div class="brandBadge" aria-hidden="true">
+          <!-- simple recycle icon -->
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M7.2 10.2 5 6.7A2 2 0 0 1 6.7 3h4.1" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M16.8 13.8 19 17.3A2 2 0 0 1 17.3 21h-4.1" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M9 21 5 21 7 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 3h4l-2 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4.3 13.2c.6-1.7 2.2-2.9 4.1-2.9h5.2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M19.7 10.8c-.6 1.7-2.2 2.9-4.1 2.9H10.4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        Salford Bins <span style="opacity:.8;">(Prototype)</span>
+      </div>
+
+      <div class="nav">
+        <a href="#home">Home</a>
+        <a href="#guide">Bin Guide</a>
+        <a href="#calendarSection">Calendar</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- HERO / HOME -->
+    <section id="home" class="hero" aria-label="Home section">
+      <div class="heroInner">
+        <div>
+          <h1 class="heroTitle">Your bin day in one place — clear, colourful, mobile-friendly.</h1>
+          <p class="heroSub">
+            Collection day: <strong>Thursday</strong>. Check your next collection, what goes in each bin, and get quick help.
+            <br/>This is a front-end prototype you can show as a concept.
+          </p>
+
+          <div class="heroPills" aria-label="Bin colours">
+            <span class="pill"><span class="dot dotPink"></span> Food / Pink (weekly)</span>
+            <span class="pill"><span class="dot dotBlue"></span> Blue (2-weekly)</span>
+            <span class="pill"><span class="dot dotBrown"></span> Brown (2-weekly)</span>
+            <span class="pill"><span class="dot dotBlack"></span> Black (3-weekly)</span>
+          </div>
+        </div>
+
+        <div class="heroActions" aria-label="Quick actions">
+          <button class="btn btnPrimary" type="button" id="jumpNextBtn">
+            📅 View next collection
+          </button>
+          <button class="btn" type="button" id="jumpGuideBtn">
+            ♻️ What goes in each bin?
+          </button>
+          <button class="btn btnDanger" type="button" id="missedBtn">
+            ⚠️ Report missed bin (demo)
+          </button>
+          <button class="btn" type="button" id="jumpContactBtn">
+            ✉️ Contact (demo)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN GRID: Dashboard + Guide/Help -->
+    <section class="section">
+      <div class="sectionHeader">
+        <h2>Dashboard</h2>
+        <p>Simple, supportive, and fast.</p>
+      </div>
+
+      <div class="grid">
+        <!-- LEFT: DASHBOARD + CALENDAR -->
+        <div class="card" aria-label="Dashboard and calendar">
+          <div class="dashTop">
+            <div class="kv" role="status" aria-live="polite">
+              <p class="kvTitle">Today</p>
+              <p class="kvValue" id="todayLine">—</p>
+            </div>
+
+            <div class="reminder" aria-label="Reminder">
+              <div class="reminderIcon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3v2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M12 19v2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M4 12h2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M18 12h2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M12 7v6l4 2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2"/>
+                </svg>
+              </div>
+              <div>
+                Leave bins out before <strong>6:30am</strong><br/>
+                Take bins in by <strong>11pm</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls" aria-label="Dashboard controls">
+            <div>
+              <label for="monthSelect">Choose month (2026)</label>
+              <select id="monthSelect" aria-label="Choose month"></select>
+            </div>
+            <div>
+              <label for="binSelect">Filter bins</label>
+              <select id="binSelect" aria-label="Choose bin filter">
+                <option value="all">All bins</option>
+                <option value="food">Food / Pink</option>
+                <option value="blue">Blue</option>
+                <option value="brown">Brown</option>
+                <option value="black">Black</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="nextBox" id="calendarSection" aria-label="Next collection box">
+            <p class="nextTitle">Next collection</p>
+            <p class="kvValue" id="nextDateLine" style="margin-top:8px;">—</p>
+            <p class="nextMeta" id="nextBinsLine">—</p>
+            <div class="tags" id="nextBinsTags" aria-label="Next bins tags"></div>
+          </div>
+
+          <div class="calHeader">
+            <h3 id="monthTitle">Month view</h3>
+            <p id="monthHint">Tap a date to preview</p>
+          </div>
+
+          <div class="calendar" id="calendar" aria-label="Month collection dates"></div>
+
+          <div class="note" aria-label="Prototype note">
+            <strong>Prototype note:</strong> This version uses a clear schedule logic (weekly/fortnightly/three-weekly).
+            You can later replace it with Salford’s exact dot schedule (date → bins).
+          </div>
+        </div>
+
+        <!-- RIGHT: QUICK HELP + MINI GUIDE -->
+        <aside class="card" aria-label="Quick help">
+          <div class="sectionHeader" style="margin:0 0 10px; padding:0;">
+            <h2 style="font-size:1.1rem;">Quick help</h2>
+            <p>Ask a simple question.</p>
+          </div>
+
+          <div class="qaBox">
+            <p class="qaTitle">Ask a question</p>
+            <p class="qaHint">
+              Try: “What goes in the blue bin?” • “What day is collection?” • “What time do I put bins out?”
+            </p>
+            <label for="questionInput">Your question</label>
+            <input id="questionInput" type="text" placeholder="Type your question…" aria-label="Question input" />
+            <div style="margin-top:10px;">
+              <button class="btn btnPrimary" type="button" id="askBtn">Get answer</button>
+            </div>
+
+            <div class="qaResult" id="qaResult" hidden aria-live="polite">
+              <p style="font-weight:950; margin:0 0 6px;">Answer</p>
+              <p class="answer" id="qaText">—</p>
+            </div>
+          </div>
+
+          <div class="miniGrid" style="margin-top:12px;">
+            <div class="kv">
+              <p class="kvTitle">Collection day</p>
+              <p class="kvValue">Thursday</p>
+              <p class="nextMeta">Always check bank holidays too (future V2).</p>
+            </div>
+            <div class="kv">
+              <p class="kvTitle">Rules</p>
+              <p class="kvValue">Lids closed</p>
+              <p class="nextMeta">No extra waste left at the side.</p>
+            </div>
+          </div>
+
+          <div class="note" style="margin-top:12px;">
+            Want council-style images? You can swap the SVG icons for real photos later (instructions below in code).
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- BIN GUIDE -->
+    <section id="guide" class="section" aria-label="Bin guide section">
+      <div class="sectionHeader">
+        <h2>Bin Guide</h2>
+        <p>What goes where (from your leaflet).</p>
+      </div>
+
+      <div class="binGrid">
+        <div class="binCard" style="--t: var(--pink);" aria-label="Food bin guide">
+          <div class="binHead">
+            <p class="binTitle">
+              <span class="dot dotPink" aria-hidden="true"></span>
+              Food / Pink lid (Weekly)
+            </p>
+            <span class="freq">Weekly</span>
+          </div>
+
+          <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+            <div aria-hidden="true">
+              <!-- SVG bin icon -->
+              <svg class="binIcon" width="70" height="70" viewBox="0 0 64 64" fill="none">
+                <rect x="18" y="18" width="28" height="38" rx="6" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)"/>
+                <rect x="16" y="14" width="32" height="8" rx="4" fill="var(--pink)"/>
+                <path d="M24 28h16M24 36h16M24 44h16" stroke="rgba(255,255,255,0.28)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div style="flex:1; min-width:220px;">
+              <p class="binText">Put food waste in your food caddy / pink-lidded bin:</p>
+              <ul>
+                <li>All cooked and uncooked food</li>
+                <li>Fruit & vegetables (and peelings)</li>
+                <li>Teabags</li>
+                <li>Meat, fish, and bones</li>
+                <li>Garden waste (as shown on leaflet)</li>
+              </ul>
+              <div class="note">Use compostable liners provided. <strong>No plastic bags.</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="binCard" aria-label="Blue bin guide">
+          <div class="binHead">
+            <p class="binTitle">
+              <span class="dot dotBlue" aria-hidden="true"></span>
+              Blue bin (Fortnightly)
+            </p>
+            <span class="freq">Every 2 weeks</span>
+          </div>
+
+          <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+            <div aria-hidden="true">
+              <svg width="70" height="70" viewBox="0 0 64 64" fill="none">
+                <rect x="18" y="18" width="28" height="38" rx="6" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)"/>
+                <rect x="16" y="14" width="32" height="8" rx="4" fill="var(--blue)"/>
+                <path d="M24 30l8-6 8 6" stroke="rgba(255,255,255,0.30)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M24 46h16" stroke="rgba(255,255,255,0.30)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div style="flex:1; min-width:220px;">
+              <p class="binText">Paper and cardboard only:</p>
+              <ul>
+                <li>Cardboard cartons</li>
+                <li>Mail / envelopes</li>
+                <li>Newspapers</li>
+                <li>Cardboard</li>
+                <li>Magazines & brochures</li>
+                <li>Mixed paper</li>
+              </ul>
+              <div class="note"><strong>No plastic bags.</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="binCard" aria-label="Brown bin guide">
+          <div class="binHead">
+            <p class="binTitle">
+              <span class="dot dotBrown" aria-hidden="true"></span>
+              Brown bin (Fortnightly)
+            </p>
+            <span class="freq">Every 2 weeks</span>
+          </div>
+
+          <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+            <div aria-hidden="true">
+              <svg width="70" height="70" viewBox="0 0 64 64" fill="none">
+                <rect x="18" y="18" width="28" height="38" rx="6" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)"/>
+                <rect x="16" y="14" width="32" height="8" rx="4" fill="var(--brown)"/>
+                <path d="M24 30h16" stroke="rgba(255,255,255,0.30)" stroke-width="2" stroke-linecap="round"/>
+                <path d="M26 44c4-6 8-6 12 0" stroke="rgba(255,255,255,0.30)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div style="flex:1; min-width:220px;">
+              <p class="binText">Recycling items (as shown on leaflet):</p>
+              <ul>
+                <li>Plastic pots, tubs, and trays</li>
+                <li>Glass bottles and jars (no lids)</li>
+                <li>Aerosols</li>
+                <li>Plastic bottles (all types)</li>
+                <li>Cans and tins</li>
+                <li>Foil and foil trays</li>
+              </ul>
+              <div class="note"><strong>No plastic bags.</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="binCard" aria-label="Black bin guide">
+          <div class="binHead">
+            <p class="binTitle">
+              <span class="dot dotBlack" aria-hidden="true"></span>
+              Black bin (Three-weekly)
+            </p>
+            <span class="freq">Every 3 weeks</span>
+          </div>
+
+          <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+            <div aria-hidden="true">
+              <svg width="70" height="70" viewBox="0 0 64 64" fill="none">
+                <rect x="18" y="18" width="28" height="38" rx="6" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.22)"/>
+                <rect x="16" y="14" width="32" height="8" rx="4" fill="#0f172a"/>
+                <path d="M24 30h16" stroke="rgba(255,255,255,0.30)" stroke-width="2" stroke-linecap="round"/>
+                <path d="M24 42h16" stroke="rgba(255,255,255,0.30)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div style="flex:1; min-width:220px;">
+              <p class="binText">Waste you can’t recycle:</p>
+              <ul>
+                <li>Plastic bags (or recycle them at supermarkets)</li>
+                <li>Disposable nappies (fold and tie in a bag)</li>
+                <li>Bagged waste you can’t recycle</li>
+                <li>Pet waste (put in a tied bag)</li>
+              </ul>
+              <div class="note">All waste must be inside the bin. <strong>Lid closed.</strong> No extra bags at the side.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section" aria-label="Contact section">
+      <div class="sectionHeader">
+        <h2>Contact (Demo)</h2>
+        <p>Prototype form (no backend).</p>
+      </div>
+
+      <div class="card">
+        <div class="controls" style="grid-template-columns:1fr;">
+          <div>
+            <label for="contactTopic">Topic</label>
+            <select id="contactTopic">
+              <option>Missed collection</option>
+              <option>Bin rules / what goes where</option>
+              <option>New address / change details</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="contactMessage">Message</label>
+            <textarea id="contactMessage" placeholder="Write your message here (demo)…"></textarea>
+          </div>
+          <button class="btn btnPrimary" type="button" id="sendBtn">Create email (demo)</button>
+          <p class="note">
+            This button creates a <strong>mailto</strong> link (demo). For a real service you’d connect this to a backend or council ticket system.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <strong>Developer note:</strong> This prototype uses SVG icons (no external images).
+      If you have official council image URLs, you can replace the SVG blocks with <code>&lt;img src="..."&gt;</code>.
+    </footer>
+  </div>
+
+  <script>
+    /**********************************************************************
+     * SALFORD BIN COLLECTION — BEAUTIFUL PROTOTYPE (V1.1)
+     * - Single HTML file
+     * - No frameworks
+     * - Colourful UI + navigation + icons
+     *
+     * IMPORTANT:
+     * The paper schedule dots are hard to read perfectly from the photos.
+     * So we use a clean cycle logic for V1. You can replace with exact data later.
+     **********************************************************************/
+
+    /* =========================
+       EDIT HERE: Collection dates as shown on the leaflet
+       ========================= */
+    const YEAR = 2026;
+    const MONTH_DATES_2026 = {
+      0: [3, 8, 15, 22, 29],     // Jan
+      1: [5, 12, 19, 26],        // Feb
+      2: [5, 12, 19, 26],        // Mar
+      3: [2, 9, 16, 23, 30],     // Apr
+      4: [7, 14, 21, 28],        // May
+      5: [4, 11, 18, 25],        // Jun
+      6: [2, 9, 16, 23, 30],     // Jul
+      7: [6, 13, 20, 27],        // Aug
+      8: [3, 10, 17, 24],        // Sep
+      9: [1, 8, 15, 22, 29],     // Oct
+      10:[5, 12, 19, 26],        // Nov
+      11:[3, 10, 17, 24, 31]     // Dec
+    };
+
+    const MONTH_NAMES = [
+      "January","February","March","April","May","June",
+      "July","August","September","October","November","December"
+    ];
+
+    const BIN_META = {
+      food:  { name: "Food / Pink",  dotClass: "dotPink" },
+      blue:  { name: "Blue",         dotClass: "dotBlue" },
+      brown: { name: "Brown",        dotClass: "dotBrown" },
+      black: { name: "Black",        dotClass: "dotBlack" }
+    };
+
+    /* =========================
+       V1 Schedule Logic (replace later if you want exact council dots)
+       Food: weekly
+       Blue: every 2 weeks
+       Brown: every 2 weeks (alternates with Blue)
+       Black: every 3 weeks
+       ========================= */
+    const CYCLE_START = new Date(Date.UTC(YEAR, 0, 3)); // Jan 3, 2026
+
+    function daysBetweenUTC(a, b){
+      const ms = 24 * 60 * 60 * 1000;
+      return Math.round((b - a) / ms);
+    }
+    function weeksSinceStart(dateUTC){
+      const days = daysBetweenUTC(CYCLE_START, dateUTC);
+      return Math.floor(days / 7);
+    }
+
+    function getBinsForDate(dateUTC){
+      const weekIndex = weeksSinceStart(dateUTC);
+
+      const isBlueWeek = (weekIndex % 2 === 0);
+      const isBrownWeek = !isBlueWeek;
+      const isBlackWeek = (weekIndex % 3 === 1);
+
+      const bins = ["food"];
+      if (isBlueWeek) bins.push("blue");
+      if (isBrownWeek) bins.push("brown");
+      if (isBlackWeek) bins.push("black");
+      return bins;
+    }
+
+    function buildAllDatesUTC(){
+      const list = [];
+      for (let m=0; m<12; m++){
+        (MONTH_DATES_2026[m] || []).forEach(day => {
+          list.push(new Date(Date.UTC(YEAR, m, day)));
+        });
+      }
+      list.sort((a,b) => a - b);
+      return list;
+    }
+    const ALL_DATES = buildAllDatesUTC();
+
+    /* =========================
+       UI Refs
+       ========================= */
+    const todayLine = document.getElementById("todayLine");
+    const monthSelect = document.getElementById("monthSelect");
+    const binSelect = document.getElementById("binSelect");
+    const nextDateLine = document.getElementById("nextDateLine");
+    const nextBinsLine = document.getElementById("nextBinsLine");
+    const nextBinsTags = document.getElementById("nextBinsTags");
+    const monthTitle = document.getElementById("monthTitle");
+    const calendar = document.getElementById("calendar");
+
+    const jumpNextBtn = document.getElementById("jumpNextBtn");
+    const jumpGuideBtn = document.getElementById("jumpGuideBtn");
+    const jumpContactBtn = document.getElementById("jumpContactBtn");
+    const missedBtn = document.getElementById("missedBtn");
+
+    const questionInput = document.getElementById("questionInput");
+    const askBtn = document.getElementById("askBtn");
+    const qaResult = document.getElementById("qaResult");
+    const qaText = document.getElementById("qaText");
+
+    const sendBtn = document.getElementById("sendBtn");
+    const contactTopic = document.getElementById("contactTopic");
+    const contactMessage = document.getElementById("contactMessage");
+
+    /* =========================
+       Helpers
+       ========================= */
+    function formatDateUK(dateUTC){
+      const day = String(dateUTC.getUTCDate()).padStart(2, "0");
+      const month = MONTH_NAMES[dateUTC.getUTCMonth()];
+      const year = dateUTC.getUTCFullYear();
+      return `${day} ${month} ${year}`;
+    }
+    function weekdayNameUTC(dateUTC){
+      const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      return days[dateUTC.getUTCDay()];
+    }
+    function renderTags(bins){
+      nextBinsTags.innerHTML = "";
+      bins.forEach(key => {
+        const tag = document.createElement("div");
+        tag.className = "tag";
+        tag.innerHTML = `<span class="dotSmall ${BIN_META[key].dotClass}"></span> ${BIN_META[key].name}`;
+        nextBinsTags.appendChild(tag);
+      });
+    }
+    function filterBins(bins, choice){
+      if (choice === "all") return bins;
+      return bins.includes(choice) ? [choice] : [];
+    }
+    function findNextCollection(fromDateUTC){
+      for (const d of ALL_DATES){
+        if (d >= fromDateUTC) return d;
+      }
+      return null;
+    }
+
+    /* =========================
+       Render
+       ========================= */
+    function fillMonthSelect(){
+      monthSelect.innerHTML = "";
+      for (let i=0; i<12; i++){
+        const opt = document.createElement("option");
+        opt.value = String(i);
+        opt.textContent = `${MONTH_NAMES[i]} ${YEAR}`;
+        monthSelect.appendChild(opt);
+      }
+    }
+
+    function renderDashboard(){
+      const now = new Date();
+      const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+      todayLine.textContent = `${formatDateUK(todayUTC)} (${weekdayNameUTC(todayUTC)})`;
+
+      const next = findNextCollection(todayUTC);
+      if (!next){
+        nextDateLine.textContent = "No more dates found.";
+        nextBinsLine.textContent = "";
+        nextBinsTags.innerHTML = "";
+        return;
+      }
+
+      const bins = getBinsForDate(next);
+      const choice = binSelect.value;
+      const shownBins = filterBins(bins, choice);
+      const list = shownBins.length ? shownBins : bins;
+
+      nextDateLine.textContent = `${formatDateUK(next)} (${weekdayNameUTC(next)})`;
+      nextBinsLine.textContent = `Bins: ${list.map(k => BIN_META[k].name).join(", ")}`;
+      renderTags(list);
+    }
+
+    function renderMonthView(monthIndex){
+      monthTitle.textContent = `${MONTH_NAMES[monthIndex]} ${YEAR} — Collection dates`;
+      calendar.innerHTML = "";
+
+      const choice = binSelect.value;
+      const days = MONTH_DATES_2026[monthIndex] || [];
+
+      if (!days.length){
+        const p = document.createElement("p");
+        p.style.color = "rgba(243,246,255,0.7)";
+        p.style.margin = "6px 0 0";
+        p.textContent = "No dates found for this month.";
+        calendar.appendChild(p);
+        return;
+      }
+
+      days.forEach(day => {
+        const dateUTC = new Date(Date.UTC(YEAR, monthIndex, day));
+        const bins = getBinsForDate(dateUTC);
+        const shown = filterBins(bins, choice);
+        const list = shown.length ? shown : bins;
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "dateBtn";
+        btn.setAttribute("aria-label", `Collection date ${formatDateUK(dateUTC)}`);
+
+        const dots = list.map(k => `<span class="dotSmall ${BIN_META[k].dotClass}" title="${BIN_META[k].name}"></span>`).join("");
+
+        btn.innerHTML = `
+          <div class="dateTop">
+            <div class="dateNum">${day}</div>
+            <div class="dateDay">${weekdayNameUTC(dateUTC)}</div>
+          </div>
+          <div class="dateDots">${dots}</div>
+          <div class="dateLine">${list.map(k => BIN_META[k].name).join(" • ")}</div>
+        `;
+
+        btn.addEventListener("click", () => {
+          nextDateLine.textContent = `${formatDateUK(dateUTC)} (${weekdayNameUTC(dateUTC)})`;
+          nextBinsLine.textContent = `Bins: ${list.map(k => BIN_META[k].name).join(", ")}`;
+          renderTags(list);
+          document.getElementById("calendarSection").scrollIntoView({behavior:"smooth", block:"start"});
+        });
+
+        calendar.appendChild(btn);
+      });
+    }
+
+    /* =========================
+       Simple Offline Q&A
+       ========================= */
+    const FAQ = [
+      {
+        keywords: ["day","collection","when","what day","thursday"],
+        answer: "Your collection day is Thursday. Leave bins out before 6:30am and bring them in by 11pm."
+      },
+      {
+        keywords: ["time","6:30","11pm","morning","late"],
+        answer: "Put bins out before 6:30am. Bring them back in by 11pm."
+      },
+      {
+        keywords: ["blue","paper","cardboard","magazine","newspaper","envelope"],
+        answer: "Blue bin: paper and cardboard only (newspapers, magazines, mixed paper, envelopes, cardboard). No plastic bags."
+      },
+      {
+        keywords: ["brown","plastic","glass","bottle","jar","can","tin","foil","aerosol"],
+        answer: "Brown bin: plastic pots/tubs/trays, plastic bottles, cans/tins, foil trays, aerosols, and glass bottles/jars (no lids). No plastic bags."
+      },
+      {
+        keywords: ["food","pink","caddy","teabag","peelings","garden","meat","fish"],
+        answer: "Food/Pink (weekly): food waste like peelings, teabags, cooked/uncooked food, meat/fish/bones. Use compostable liners (no plastic bags)."
+      },
+      {
+        keywords: ["black","general","nappy","diaper","waste","pet"],
+        answer: "Black bin: waste you can’t recycle. Tie bags properly. Keep lid closed. No extra waste at the side."
+      },
+      {
+        keywords: ["extra","side","additional"],
+        answer: "Do not leave extra waste at the side. Put waste inside the bin and keep the lid closed."
+      }
+    ];
+
+    function answerQuestion(text){
+      const q = (text || "").toLowerCase().trim();
+      if (!q) return "Please type a question (example: “What goes in the blue bin?”).";
+
+      for (const item of FAQ){
+        for (const kw of item.keywords){
+          if (q.includes(kw)) return item.answer;
+        }
+      }
+      return "I’m not sure. Try asking about: blue bin, brown bin, black bin, food/pink, collection day, or collection time.";
+    }
+
+    /* =========================
+       Actions / Buttons
+       ========================= */
+    jumpNextBtn.addEventListener("click", () => {
+      document.getElementById("calendarSection").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+    jumpGuideBtn.addEventListener("click", () => {
+      document.getElementById("guide").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+    jumpContactBtn.addEventListener("click", () => {
+      document.getElementById("contact").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+    missedBtn.addEventListener("click", () => {
+      alert("Demo: In a real app, this would open a council report form or create a ticket.");
+    });
+
+    askBtn.addEventListener("click", () => {
+      qaText.textContent = answerQuestion(questionInput.value);
+      qaResult.hidden = false;
+    });
+    questionInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
+        e.preventDefault();
+        askBtn.click();
+      }
+    });
+
+    sendBtn.addEventListener("click", () => {
+      const topic = contactTopic.value;
+      const msg = (contactMessage.value || "").trim();
+
+      const subject = encodeURIComponent(`Bin query: ${topic}`);
+      const body = encodeURIComponent(
+        `Hello,\n\nTopic: ${topic}\n\nMessage:\n${msg || "(no message)"}\n\nThanks.`
+      );
+
+      // Demo mailto - replace with real email or backend later
+      const mailto = `mailto:contact@salford.gov.uk?subject=${subject}&body=${body}`;
+      window.location.href = mailto;
+    });
+
+    /* =========================
+       Init
+       ========================= */
+    function init(){
+      fillMonthSelect();
+
+      // default month: if not 2026, start at January
+      const now = new Date();
+      const defaultMonth = (now.getUTCFullYear() === YEAR) ? now.getUTCMonth() : 0;
+      monthSelect.value = String(defaultMonth);
+
+      renderDashboard();
+      renderMonthView(defaultMonth);
+
+      monthSelect.addEventListener("change", () => {
+        renderMonthView(Number(monthSelect.value));
+      });
+
+      binSelect.addEventListener("change", () => {
+        renderDashboard();
+        renderMonthView(Number(monthSelect.value));
+      });
+    }
+    init();
+
+    /**********************************************************************
+     * HOW TO USE COUNCIL IMAGES (OPTIONAL, LATER)
+     * - Replace the SVG blocks in the Bin Guide with:
+     *   <img src="YOUR_IMAGE_URL" alt="Blue bin" width="70" height="70" style="border-radius:12px;">
+     *
+     * To use real images safely:
+     * - Use images you own, or images with permission / a license.
+     * - Or download official images and host them in your own project folder.
+     **********************************************************************/
+  </script>
+</body>
+</html>
